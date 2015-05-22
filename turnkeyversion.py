@@ -2,8 +2,7 @@
 
 import json
 import subprocess
-
-turnkey_box = False
+from ansible.module_utils.basic import *
 
 def is_number(s):
 	try:
@@ -12,15 +11,21 @@ def is_number(s):
 	except:
 		return False
 
-try:
+def main():
+  turnkey_box = False
+  result = { 'ansible_facts': {} }
+  global module
+  module = AnsibleModule(argument_spec = dict(), supports_check_mode = True)
+
+  try:
 	rc = subprocess.check_output(["turnkey-version"])
 	turnkey_box = True
-except:
+  except:
 	#could uncomment this line for testing if needed.
 	#rc = "turnkey-jenkins-13.0-wheezy-amd64"
 	turnkey_box = False
 
-if turnkey_box:
+  if turnkey_box:
 	facts = rc.split("-")
 
 	#Get the version number. should be the only number in the facts list
@@ -40,20 +45,15 @@ if turnkey_box:
 	fact_arch = facts[-1]
 	fact_deb = facts[-2]
 
-	print(json.dumps({
-		"ansible_facts" : {
-			"turnkey" : True, 
-			"turnkey_version" : rc,
-			"turnkey_app" : fact_app,
-			"turnkey_ver" : fact_version,
-			"turnkey_arch" : fact_arch,
-			"turnkey_deb" : fact_deb
-		}
-	}))
-else:
-	print(json.dumps({
-		"ansible_facts" : {
-			"turnkey" : False
-		}
-	}))
+  	result['ansible_facts']['turnkey'] = turnkey_box
+  	result['ansible_facts']['turnkey_version_output'] = rc
+  	result['ansible_facts']['turnkey_app'] = fact_app.rstrip()
+  	result['ansible_facts']['turnkey_ver'] = fact_version
+  	result['ansible_facts']['turnkey_arch'] = fact_arch
+  	result['ansible_facts']['turnkey_deb'] = fact_deb
+  else:
+  	result['ansible_facts']['turnkey'] = turnkey_box
 
+  module.exit_json(**result)
+
+main()
