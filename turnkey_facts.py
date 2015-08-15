@@ -20,7 +20,7 @@ def main():
   )
 
   try:
-	rc = subprocess.check_output(["turnkey-version"])
+	rc = subprocess.check_output(["turnkey-version"]).rstrip()
 	turnkey_box = True
   except:
 	#could uncomment this line for testing if needed.
@@ -49,7 +49,7 @@ def main():
 
   	result['ansible_facts']['turnkey'] = turnkey_box
   	result['ansible_facts']['turnkey_version_output'] = rc
-  	result['ansible_facts']['turnkey_app'] = fact_app.rstrip()
+  	result['ansible_facts']['turnkey_app'] = fact_app
   	result['ansible_facts']['turnkey_ver'] = fact_version
   	result['ansible_facts']['turnkey_arch'] = fact_arch
   	result['ansible_facts']['turnkey_deb'] = fact_deb
