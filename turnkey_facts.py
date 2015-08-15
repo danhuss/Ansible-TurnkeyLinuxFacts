@@ -2,7 +2,6 @@
 
 import json
 import subprocess
-from ansible.module_utils.basic import *
 
 def is_number(s):
 	try:
@@ -15,7 +14,10 @@ def main():
   turnkey_box = False
   result = { 'ansible_facts': {} }
   global module
-  module = AnsibleModule(argument_spec = dict(), supports_check_mode = True)
+  module = AnsibleModule(
+    argument_spec       = dict(),
+    supports_check_mode = True
+  )
 
   try:
 	rc = subprocess.check_output(["turnkey-version"])
@@ -56,4 +58,6 @@ def main():
 
   module.exit_json(**result)
 
-main()
+from ansible.module_utils.basic import *
+if __name__ == '__main__':
+    main()
