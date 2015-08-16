@@ -1,5 +1,20 @@
 #!/usr/bin/python
 
+DOCUMENTATION = '''
+---
+module: turnkey_facts
+short_description: Gathers facts from TurnKey GNU/Linux Appliances
+description:
+    - Runs 'turnkey-version'
+    - Returns:
+        - turnkey                = True if successful
+        - turnkey_app            = TurnKey Appliance application eg. wordpress
+        - turnkey_ver            = TurnKey GNU/Linux version eg. 14.0
+        - turnkey_arch           = Linux target architecture
+        - turnkey_deb            = Codename for Debian version eg. jessie
+        - turnkey_version_output = Output from turnkey-version
+'''
+
 import json
 import subprocess
 
