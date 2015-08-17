@@ -1,8 +1,22 @@
 #!/usr/bin/python
 
+DOCUMENTATION = '''
+---
+module: turnkey_facts
+short_description: Gathers facts from TurnKey GNU/Linux Appliances
+description:
+    - Runs 'turnkey-version'
+    - Returns:
+        - turnkey                = True if successful
+        - turnkey_app            = TurnKey Appliance application eg. wordpress
+        - turnkey_ver            = TurnKey GNU/Linux version eg. 14.0
+        - turnkey_arch           = Linux target architecture
+        - turnkey_deb            = Codename for Debian version eg. jessie
+        - turnkey_version_output = Output from turnkey-version
+'''
+
 import json
 import subprocess
-from ansible.module_utils.basic import *
 
 def is_number(s):
 	try:
@@ -15,10 +29,13 @@ def main():
   turnkey_box = False
   result = { 'ansible_facts': {} }
   global module
-  module = AnsibleModule(argument_spec = dict(), supports_check_mode = True)
+  module = AnsibleModule(
+    argument_spec       = dict(),
+    supports_check_mode = True
+  )
 
   try:
-	rc = subprocess.check_output(["turnkey-version"])
+	rc = subprocess.check_output(["turnkey-version"]).rstrip()
 	turnkey_box = True
   except:
 	#could uncomment this line for testing if needed.
@@ -47,7 +64,7 @@ def main():
 
   	result['ansible_facts']['turnkey'] = turnkey_box
   	result['ansible_facts']['turnkey_version_output'] = rc
-  	result['ansible_facts']['turnkey_app'] = fact_app.rstrip()
+  	result['ansible_facts']['turnkey_app'] = fact_app
   	result['ansible_facts']['turnkey_ver'] = fact_version
   	result['ansible_facts']['turnkey_arch'] = fact_arch
   	result['ansible_facts']['turnkey_deb'] = fact_deb
@@ -56,4 +73,6 @@ def main():
 
   module.exit_json(**result)
 
-main()
+from ansible.module_utils.basic import *
+if __name__ == '__main__':
+    main()
